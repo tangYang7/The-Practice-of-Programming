@@ -1,5 +1,5 @@
 #include "robot.h"
-void Robot::SetRobotLocation(int w, int h)
+void Robot::SetRobotLocation(const int w, const int h)
 {
     this->x_ = w;
     this->y_ = h;
@@ -9,9 +9,8 @@ void Robot::GoForward()
 {
     this->x_ += this->forwardX;
     this->y_ += this->forwardY;
-    this->myvisit[x_][y_]++;
+    this->myvisit[x_][y_] += 1;
 }
-
 bool Robot::IsFacingWall(const Maze &mz) const
 {
     int w = this->x_ + this->forwardX;
@@ -24,27 +23,10 @@ bool Robot::IsFacingWall(const Maze &mz) const
 }
 
 void Robot::TurnRight()
-{
-    if(this->forwardX == 0 && this->forwardY == 1)
-    {
-        this->forwardX = -1;
-        this->forwardY = 0;
-    }
-    else if(this->forwardX == 0 && this->forwardY == -1)
-    {
-        this->forwardX = 1;
-        this->forwardY = 0;
-    }
-    else if(this->forwardX == 1 && this->forwardY == 0)
-    {
-        this->forwardX = 0;
-        this->forwardY = 1;
-    }
-    else if(this->forwardX == -1 && this->forwardY == 0)
-    {
-        this->forwardX = 0;
-        this->forwardY = -1;
-    }    
+{   
+    this->dir = (this->dir + 1) % 4;
+    this->forwardX = this->dirX[this->dir];
+    this->forwardY = this->dirY[this->dir]; 
 }
 
 int Robot::VisitNumber(const int x, const int y) const
