@@ -44,64 +44,54 @@ bool Maze::IsWall(const int w, const int h) const {
 class Robot
 {
 public:
-    void SetNumOperation(const int n) {totalStep = n;};
     void SetRobotLocation(const int w, const int h);
-    int Robot_width()   const { return this->_x; };
-    int Robot_height()  const { return this->_y; };
+    int Robot_x()   const { return this->x_; };
+    int Robot_y()  const { return this->y_; };
     int Robot_forwardX()   const { return this->forwardX; };
     int Robot_forwardY()  const { return this->forwardY; };
-    long long Robot_totalOp() const { return this->totalStep; };
-
-    void GoForward(const Maze &mz);
-    bool IsFacingWall(const Maze &mz) const;
-    void TurnRight();
     int VisitNumber(const int x, const int y) const;
-    void SetLoop_nAndLoc(const int x, const int y);
     int Robot_loopAccount()         const { return this->loop_n; };
     int Robot_finalX(const int n)   const { return this->loopLoc[n][0]; };
     int Robot_finalY(const int n)   const { return this->loopLoc[n][1]; };
+
+    void GoForward();
+    void TurnRight();
+    bool IsFacingWall(const Maze &mz) const;
+    void SetLoop_nAndLoc(const int x, const int y);
+
 private:
-    int _x = 0;
-    int _y = 0;
-    long long totalStep = 1;
-    int forwardX = 0;       // initially moves upwards
-    int forwardY = -1;      // initially moves upwards
+    int x_ = 0;
+    int y_ = 0;
+    int forwardX = 0;   // initially moves upwards
+    int forwardY = -1;  // initially moves upwards
+    int dirX[4] = {0, 1, 0, -1};
+    int dirY[4] = {-1, 0, 1, 0};
+    int dir = 0;
     int myvisit[MAX_WIDTH][MAX_HEIGHT] = {0};
     int loop_n = 0;
     int loopLoc[MAX_WIDTH * MAX_HEIGHT][2] = {0};
 };
 
-
 void Robot::SetRobotLocation(const int w, const int h){
-    this->_x = w;
-    this->_y = h;
+    this->x_ = w;
+    this->y_ = h;
 }
 
-void Robot::GoForward(const Maze &mz){
-    this->_x += this->forwardX;
-    this->_y += this->forwardY;
-    this->myvisit[_x][_y]++;
+void Robot::GoForward(){
+    this->x_ += this->forwardX;
+    this->y_ += this->forwardY;
+    this->myvisit[x_][y_]++;
 }
 
 void Robot::TurnRight(){
-    if(this->forwardX == 0 && this->forwardY == 1){
-        this->forwardX = -1;
-        this->forwardY = 0;
-    } else if(this->forwardX == 0 && this->forwardY == -1){
-        this->forwardX = 1;
-        this->forwardY = 0;
-    } else if(this->forwardX == 1 && this->forwardY == 0){
-        this->forwardX = 0;
-        this->forwardY = 1;
-    } else if(this->forwardX == -1 && this->forwardY == 0){
-        this->forwardX = 0;
-        this->forwardY = -1;
-    }    
+    this->dir = (this->dir + 1) % 4;
+    this->forwardX = this->dirX[this->dir];
+    this->forwardY = this->dirY[this->dir]; 
 }
 
 bool Robot::IsFacingWall(const Maze &mz) const {
-    int w = this->_x + this->forwardX;
-    int h = this->_y + this->forwardY;
+    int w = this->x_ + this->forwardX;
+    int h = this->y_ + this->forwardY;
     if(mz.IsWall(w, h)){
         return true;
     }
@@ -137,17 +127,17 @@ int main()
         checkObj(line, i, mybot, mymap);
     }
 
-    int pre_x = mybot.Robot_width();
-    int pre_y = mybot.Robot_height();
+    int pre_x = mybot.Robot_x();
+    int pre_y = mybot.Robot_y();
     int count = 0;
     for(int i = 0; i < n; i++) {
         while((mybot.IsFacingWall(mymap))){
             mybot.TurnRight();
         }
-        mybot.GoForward(mymap);
+        mybot.GoForward();
 
-        int x = mybot.Robot_width();
-        int y = mybot.Robot_height();
+        int x = mybot.Robot_x();
+        int y = mybot.Robot_y();
         int check_next = mybot.VisitNumber(x + mybot.Robot_forwardX(), y + mybot.Robot_forwardY());
         if(mybot.VisitNumber(pre_x, pre_y) >= 3){
             if(mybot.VisitNumber(x, y) <= 2 && check_next < 2){
@@ -171,7 +161,7 @@ int main()
 // mymap.PrintMap();
 // DEBUG_printAllVisitNumer(mybot, w, h);
 
-    cout << mybot.Robot_width() << " " << mybot.Robot_height() << endl;
+    cout << mybot.Robot_x() << " " << mybot.Robot_y() << endl;
 }
 
 void DEBUG_printAllLoopLocs(const Robot bot){
@@ -213,6 +203,8 @@ CASE 1：
 ............
 ..#O........
 ..........#.
+
+(7, 1)
 ---------------------
 CASE 2:
 5 5
@@ -222,6 +214,8 @@ CASE 2:
 #.#.#
 #...#
 ##O##
+
+(1, 3)
 ---------------------
 CASE 3:
 16 10
@@ -236,4 +230,6 @@ CASE 3:
 .......####.....
 #...............
 ###############.
+
+ (6, 6)
 */

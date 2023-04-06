@@ -4,7 +4,8 @@
 #include "maze.h"
 
 using namespace std;
-void checkObj(string &s, int row, Robot &bot, Maze &map);
+enum  {ONCE = 1, TWICE = 2, THREE_TIMES = 3};
+void loadInfo(string &s, const int row, Robot &bot, Maze &map);
 int main()
 {
     int w, h;
@@ -15,30 +16,30 @@ int main()
 
     long long n;
     cin >> n; cin.ignore();
-    for(int i = 0; i < h; i++) 
+    for(int i = 0; i < h; ++i) 
     {
         string line;
         getline(cin, line);
-        checkObj(line, i, mybot, mymap);
+        loadInfo(line, i, mybot, mymap);
     }
 
-    int pre_x = mybot.Robot_width();
-    int pre_y = mybot.Robot_height();
+    int pre_x = mybot.Robot_x();
+    int pre_y = mybot.Robot_y();
     int count = 0;
-    for(int i = 0; i < n; i++) 
+    for(int i = 0; i < n; ++i) 
     {
-        while((mybot.IsFacingWall(mymap)))
+        while(mybot.IsFacingWall(mymap))
         {
             mybot.TurnRight();
         }
         mybot.GoForward();
 
-        int x = mybot.Robot_width();
-        int y = mybot.Robot_height();
+        int x = mybot.Robot_x();
+        int y = mybot.Robot_y();
         int check_next = mybot.VisitNumber(x + mybot.Robot_forwardX(), y + mybot.Robot_forwardY());
-        if(mybot.VisitNumber(pre_x, pre_y) >= 3)
+        if(mybot.VisitNumber(pre_x, pre_y) >= THREE_TIMES)
         {
-            if(mybot.VisitNumber(x, y) <= 2 && check_next < 2)      //It's extra to be saved in Loop_nAndLoc.
+            if(mybot.VisitNumber(x, y) <= TWICE && check_next < TWICE)      //It's extra to be saved in Loop_nAndLoc.
             {
                 mybot.SetLoop_nAndLoc(pre_x, pre_y);
             }
@@ -48,9 +49,9 @@ int main()
                 mybot.SetRobotLocation(mybot.Robot_finalX(tmp), mybot.Robot_finalY(tmp));
                 break;
             }
-        }else if(mybot.VisitNumber(pre_x, pre_y) == 2)
+        } else if(mybot.VisitNumber(pre_x, pre_y) == TWICE)
         {
-            if(mybot.VisitNumber(x, y) <= 1 && check_next < 1)  // repeated point (it's not we need)
+            if(mybot.VisitNumber(x, y) <= ONCE && check_next < ONCE)  // repeated point (it's not we need)
             {
                 pre_x = x, pre_y = y;
                 continue;
@@ -62,13 +63,12 @@ int main()
         pre_x = x, pre_y = y;
     }
 
-    cout << mybot.Robot_width() << " " << mybot.Robot_height() << endl;
+    cout << mybot.Robot_x() << " " << mybot.Robot_y() << endl;
 }
 
-void checkObj(string &s, int row, Robot &bot, Maze &map)
+void loadInfo(string &s, const int row, Robot &bot, Maze &map)
 {
-    int len = s.length();
-    for(int i = 0; i<len; i++)
+    for(int i = 0; i<s.length(); ++i)
     {
         if(s[i] == '#')
         {
