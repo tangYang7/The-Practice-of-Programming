@@ -116,17 +116,12 @@ String operator+(const String &lhs, const String &rhs) {
 
 bool operator<(const String &lhs, const String &rhs) {
     for(int32_t i = 0; i < lhs.size() && i < rhs.size(); ++i){
-        if(lhs[i] < rhs[i]){
-            return true;
+        if(lhs[i] == rhs[i]){
+            continue;
         }
-        else if(lhs[i] > rhs[i]){
-            return false;
-        }
+        return lhs[i] < rhs[i];
     }
-    if(lhs.size() < rhs.size()){
-        return true;
-    }
-    return false;
+    return lhs.size() < rhs.size();
 }
 
 bool operator==(const String &lhs, const String &rhs) {
@@ -134,9 +129,10 @@ bool operator==(const String &lhs, const String &rhs) {
         return false;
     }
     for(int32_t i = 0; i < lhs.size(); ++i){
-        if(lhs[i] != rhs[i]){
-            return false;
+        if(lhs[i] == rhs[i]){
+            continue;
         }
+        return false;
     }
     return true;
 }
