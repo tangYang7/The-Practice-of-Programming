@@ -74,8 +74,8 @@ int main() {
     String s6;
     cout << endl << "stage " << ++n << ": >> operator" << endl;
     // cout << "Please input a string: ";
-    // cin >> s6;
-    // cout << "Your input: " << s6 << endl;
+    cin >> s6;
+    cout << "Your input: " << s6 << endl;
 
     // stage 7: swap()
     cout << endl << "stage " << ++n << ": swap()" << endl;
